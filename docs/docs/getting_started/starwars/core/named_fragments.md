@@ -39,16 +39,16 @@ Spread the fragment with standard `...CharacterIdentityFields` syntax inside a r
 
 ## Reusing it alongside inline selections
 
-A spread can be combined with inline fields. `CharacterRichSummaryResolver` needs the same identity fields **plus** the character's `id` for its batch lookups, so it spreads the shared fragment and adds `id` inline:
+A spread can be combined with inline fields. `CharacterRichSummaryResolver` needs the same identity fields **plus** the character's `id` for its batch lookups and the `homeworld { name }` for its summary, so it spreads the shared fragment and adds both inline:
 
 === "Kotlin"
 
     ```kotlin
-    @Resolver(objectValueFragment = "fragment _ on Character { id ...CharacterIdentityFields }")
+    @Resolver(objectValueFragment = "fragment _ on Character { id homeworld { name } ...CharacterIdentityFields }")
     class CharacterRichSummaryResolver(/* ... */) : CharacterResolvers.RichSummary() {
         override suspend fun batchResolve(contexts: List<Context>): List<FieldValue<String>> {
             // ctx.getObjectValue().getNameOrThrow() / .getBirthYearOrThrow() come from the shared fragment,
-            // ctx.getObjectValue().getIdOrThrow() comes from the inline selection.
+            // ctx.getObjectValue().getIdOrThrow() / .getHomeworldOrThrow()?.getNameOrThrow() come from the inline selections.
         }
     }
     ```
